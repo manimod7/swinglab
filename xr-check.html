@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SwingLab device check</title>
+<link rel="stylesheet" href="styles.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+</head>
+<body>
+<main>
+  <h1>Device check</h1>
+  <p class="lede">Open this page in the Meta Quest Browser. It checks that WebXR works, measures how often the controllers report a pose, and how steady the pose is when the bat is held still. Do this before anything else; it takes two minutes.</p>
+  <ol>
+    <li>Press <b>Start check</b> and put the headset on.</li>
+    <li>Hold the bat (or the controller) as still as you can against your chest, then pull the trigger on the <i>other</i> controller. It records for 3 seconds.</li>
+    <li>Take the headset off. The results appear below. Use <b>Copy results</b> and paste them to me.</li>
+  </ol>
+  <div class="actions"><button class="primary" id="start" type="button">Start check</button><button class="ghost" id="copy" type="button" hidden>Copy results</button></div>
+  <pre id="out" style="white-space:pre-wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:14px"></pre>
+  <canvas id="c" width="800" height="400" hidden></canvas>
+  <canvas id="hud" width="1024" height="512" hidden></canvas>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import { drawHud } from './src/hud.js';
+const $ = (id) => document.getElementById(id);
+const out = $('out'), res = { page: location.href, ua: navigator.userAgent, secure: window.isSecureContext, webxr: !!navigator.xr, immersiveVR: null, session: null, hands: {} };
+const show = () => { out.textContent = JSON.stringify(res, null, 2); };
+(async () => { if (navigator.xr) { try { res.immersiveVR = await navigator.xr.isSessionSupported('immersive-vr'); } catch (e) { res.immersiveVR = 'error: ' + e.message; } } show(); })();
+
+$('start').addEventListener('click', async () => {
+  if (!navigator.xr) { res.error = 'navigator.xr is missing: open this page in the Meta Quest Browser over HTTPS.'; show(); return; }
+  const renderer = new THREE.WebGLRenderer({ canvas: $('c') }); renderer.xr.enabled = true;
+  const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(60, 2, 0.05, 50);
+  const hudC = $('hud'), tex = new THREE.CanvasTexture(hudC);
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.6), new THREE.MeshBasicMaterial({ map: tex, transparent: true })); plane.position.set(0, 1.4, -1.6); scene.add(plane);
+  let session;
+  try { session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor'] }); } catch (e) { res.error = 'requestSession failed: ' + e.message; show(); return; }
+  renderer.xr.setReferenceSpaceType('local-floor'); await renderer.xr.setSession(session);
+  const st = { frames: 0, t0: null, hz: [], cap: null, prevTrig: {}, done: false, lastHud: 0 };
+  const stats = {};
+  session.addEventListener('end', () => { res.session = { frames: st.frames, seconds: st.t0 ? (st.last - st.t0) : 0, display_fps: st.frames / Math.max(1e-3, st.last - st.t0) }; for (const h in stats) res.hands[h].pose_updates_per_s = stats[h].n / Math.max(1e-3, st.last - st.t0); show(); $('copy').hidden = false; });
+  renderer.setAnimationLoop((time, frame) => {
+    if (!frame) return;
+    const t = time / 1000; if (st.t0 == null) st.t0 = t; st.last = t; st.frames++;
+    const ref = renderer.xr.getReferenceSpace();
+    const lines = [];
+    for (const src of session.inputSources) {
+      if (!src.gripSpace) continue;
+      const pose = frame.getPose(src.gripSpace, ref), h = src.handedness;
+      res.hands[h] = res.hands[h] || { profiles: src.profiles, buttons: src.gamepad ? src.gamepad.buttons.length : 0 };
+      stats[h] = stats[h] || { n: 0 };
+      if (!pose) continue;
+      stats[h].n++;
+      const p = pose.transform.position, o = pose.transform.orientation;
+      lines.push(`${h}: ${(p.x).toFixed(2)}, ${(p.y).toFixed(2)}, ${(p.z).toFixed(2)}`);
+      const trig = src.gamepad && src.gamepad.buttons[0] && src.gamepad.buttons[0].pressed;
+      if (st.cap && st.cap.free !== h && st.cap.active) { (st.cap.s[h] = st.cap.s[h] || []).push([t, p.x, p.y, p.z, o.x, o.y, o.z, o.w]); }
+      if (trig && !st.prevTrig[h] && !st.cap) { st.cap = { free: h, t0: t, s: {}, active: true }; }
+      st.prevTrig[h] = trig;
+    }
+    if (st.cap && st.cap.active && t - st.cap.t0 > 3) {
+      st.cap.active = false;
+      for (const h in st.cap.s) {
+        const a = st.cap.s[h], n = a.length, mean = (k) => a.reduce((s, r) => s + r[k], 0) / n, sd = (k) => Math.sqrt(a.reduce((s, r) => s + (r[k] - mean(k)) ** 2, 0) / n);
+        let maxAng = 0; const q0 = [mean(4), mean(5), mean(6), mean(7)], ql = Math.hypot(...q0);
+        for (const r of a) { const d = Math.abs((q0[0] * r[4] + q0[1] * r[5] + q0[2] * r[6] + q0[3] * r[7]) / ql); maxAng = Math.max(maxAng, 2 * Math.acos(Math.min(1, d)) * 180 / Math.PI); }
+        res.hands[h].hold_still = { samples: n, position_sd_mm: { x: sd(1) * 1000, y: sd(2) * 1000, z: sd(3) * 1000 }, max_orientation_dev_deg: maxAng };
+      }
+      st.done = true; show();
+    }
+    if (t - st.lastHud > 0.25) {
+      st.lastHud = t;
+      drawHud(hudC, { kicker: 'Device check', title: st.done ? 'Done. Take the headset off.' : st.cap ? 'Recording 3 s...' : 'Hold the bat still against your chest', lines: st.done ? ['Results are on the page.'] : ['Then pull the trigger on the other controller.', ...lines] });
+      tex.needsUpdate = true;
+    }
+    renderer.render(scene, cam);
+  });
+});
+$('copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(out.textContent); $('copy').textContent = 'Copied'; } catch (e) { $('copy').textContent = 'Select the text and copy it'; } });
+</script>
+</body>
+</html>

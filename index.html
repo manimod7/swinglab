@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SwingLab: a swing lab for a 3D-printed VR cricket bat</title>
+<meta name="description" content="Track a 3D-printed cricket bat on a Meta Quest 3, measure every swing and rate every shot against a virtual bowling machine.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="top-in">
+    <a class="mark" href="#" aria-label="SwingLab home"><span class="mark-bat" aria-hidden="true"></span>SwingLab</a>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" id="t-drill" aria-controls="v-drill" aria-selected="true">Drill</button>
+      <button role="tab" id="t-review" aria-controls="v-review" aria-selected="false" tabindex="-1">Review</button>
+      <button role="tab" id="t-hw" aria-controls="v-hw" aria-selected="false" tabindex="-1">Hardware</button>
+      <button role="tab" id="t-about" aria-controls="v-about" aria-selected="false" tabindex="-1">About</button>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Switch colour theme">Theme</button>
+  </div>
+</header>
+<div class="banner" id="banner" hidden></div>
+
+<main id="main">
+  <section id="v-drill" role="tabpanel" aria-labelledby="t-drill">
+    <h1>Every swing, measured.</h1>
+    <p class="lede">Put on a Meta Quest 3 with the printed bat, calibrate in under a minute, then face a virtual bowling machine. SwingLab reads the controller pose at tracking rate and scores each swing and shot. No headset? The simulator runs the same drill with a scripted batter.</p>
+    <div class="actions">
+      <button class="primary" id="enter-vr" type="button" hidden>Enter VR</button>
+      <button class="ghost" id="run-sim" type="button">Run the simulator</button>
+      <button class="ghost" id="stop-sim" type="button" hidden>Stop</button>
+      <button class="ghost" id="dl-session" type="button" hidden>Download this session</button>
+      <button class="ghost" id="open-review" type="button" hidden>Review it</button>
+    </div>
+    <p class="sub" id="xr-status" aria-live="polite"></p>
+    <div class="stage" id="stage">
+      <canvas id="gl" aria-label="3D view of the drill"></canvas>
+      <canvas id="hud" width="1024" height="512" aria-hidden="true"></canvas>
+    </div>
+    <ol class="log" id="log" aria-label="Shots this session"></ol>
+  </section>
+
+  <section id="v-review" role="tabpanel" aria-labelledby="t-review" hidden>
+    <h1>Review a session</h1>
+    <p class="lede" id="r-lede"></p>
+    <div class="picker">
+      <label for="r-pick">Session</label>
+      <select id="r-pick"></select>
+      <label class="ghost filebtn">Open a file<input type="file" id="r-file" accept=".json,application/json" hidden></label>
+    </div>
+    <div class="cards" id="r-cards"></div>
+    <div class="rgrid">
+      <div>
+        <ol class="swings" id="r-list" aria-label="Swings in this session"></ol>
+      </div>
+      <div>
+        <div class="stage small"><canvas id="rgl" aria-label="3D replay of the selected swing"></canvas></div>
+        <div class="controls">
+          <button class="primary" id="r-play" type="button">Play</button>
+          <input type="range" id="r-scrub" min="0" max="1000" value="0" aria-label="Position in the swing">
+        </div>
+        <figure class="chartwrap"><canvas id="r-chart" width="900" height="240" aria-label="Bat tip speed over time"></canvas></figure>
+        <div class="tablewrap"><table id="r-table"></table></div>
+      </div>
+    </div>
+    <h2>Consistency across the session</h2>
+    <p class="sub">Spread of each metric across the swings. The repeatability score is 100 when the spread is zero and falls as the spread grows past each metric's tolerance.</p>
+    <div class="tablewrap"><table id="r-cons"></table></div>
+  </section>
+
+  <section id="v-hw" role="tabpanel" aria-labelledby="t-hw" hidden>
+    <h1>The bat</h1>
+    <div class="prose" id="hw"></div>
+  </section>
+
+  <section id="v-about" role="tabpanel" aria-labelledby="t-about" hidden>
+    <h1>How SwingLab works</h1>
+    <div class="prose" id="about"></div>
+  </section>
+</main>
+<footer class="foot"><span id="foot-src">SwingLab · built by Manish Modwani · tracking accuracy is that of the Quest 3 controllers, not a lab instrument.</span></footer>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
