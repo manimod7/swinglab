@@ -86,10 +86,10 @@ th{font-weight:600;color:var(--muted);font-size:13.5px}
 @keyframes clDraw{0%{stroke-dashoffset:1;opacity:1}38%,90%{stroke-dashoffset:0;opacity:1}98%,100%{stroke-dashoffset:0;opacity:0}}
 .cl-dot{transform-box:fill-box;transform-origin:center;animation:clDot 5s ease-in-out infinite}
 @keyframes clDot{0%,35%{transform:scale(0);opacity:0}41%{transform:scale(1.7);opacity:1}48%,90%{transform:scale(1);opacity:1}98%,100%{transform:scale(1);opacity:0}}
-.sl-bat{transform-box:view-box;transform-origin:24px 34px;transform:rotate(38deg);animation:slBat 4.6s infinite}
-@keyframes slBat{0%{transform:rotate(-8deg);animation-timing-function:cubic-bezier(.3,0,.3,1)}22%{transform:rotate(-52deg);animation-timing-function:ease-in-out}42%{transform:rotate(-56deg);animation-timing-function:cubic-bezier(.6,0,.9,.55)}52%{transform:rotate(38deg);animation-timing-function:cubic-bezier(.1,.6,.3,1)}61%{transform:rotate(54deg);animation-timing-function:ease-in-out}78%{transform:rotate(52deg);animation-timing-function:cubic-bezier(.45,0,.55,1)}94%,100%{transform:rotate(-8deg)}}
-.sl-ball{transform-box:fill-box;transform-origin:center;animation:slBall 4.6s infinite}
-@keyframes slBall{0%,38%{transform:translate(17px,-5px) scale(.9);opacity:0;animation-timing-function:linear}40%{opacity:1}52%{transform:translate(0,0) scale(1);opacity:1;animation-timing-function:linear}53%{transform:translate(0,0) scale(1.25,.8);opacity:1;animation-timing-function:cubic-bezier(.1,.7,.3,1)}62%{transform:translate(4px,-14px) scale(.8);opacity:.9}72%{transform:translate(7px,-26px) scale(.55);opacity:0}100%{transform:translate(17px,-5px) scale(.9);opacity:0}}
+.sl-bat{transform-box:view-box;transform-origin:24px 34px;transform:rotate(45deg);animation:slBat 2.6s infinite}
+@keyframes slBat{0%{transform:rotate(45deg);animation-timing-function:ease-in-out}20%{transform:rotate(88deg);animation-timing-function:linear}32.3%{transform:rotate(45deg);animation-timing-function:linear}52%{transform:rotate(-35deg);animation-timing-function:ease-in-out}100%{transform:rotate(45deg)}}
+.sl-ball{transform-box:fill-box;transform-origin:center;animation:slBall 2.6s infinite}
+@keyframes slBall{0%,19%{transform:translate(10px,-26px) scale(.9);opacity:0;animation-timing-function:cubic-bezier(.4,0,.9,.7)}21%{opacity:1}32.3%{transform:translate(0,0) scale(1);opacity:1;animation-timing-function:linear}33.3%{transform:translate(0,0) scale(1.25,.8);opacity:1;animation-timing-function:cubic-bezier(.1,.7,.3,1)}43%{transform:translate(-6px,-13px) scale(.85);opacity:.9}54%{transform:translate(-11px,-24px) scale(.55);opacity:0}100%{transform:translate(10px,-26px) scale(.9);opacity:0}}
 @media(prefers-reduced-motion:reduce){.cl-line,.cl-dot,.sl-bat,.sl-ball{animation:none}.cl-line{stroke-dashoffset:0}.cl-dot{transform:none}}
 
 /* smooth motion layer */
