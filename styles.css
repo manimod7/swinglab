@@ -86,10 +86,10 @@ th{font-weight:600;color:var(--muted);font-size:13.5px}
 @keyframes clDraw{0%{stroke-dashoffset:1;opacity:1}38%,90%{stroke-dashoffset:0;opacity:1}98%,100%{stroke-dashoffset:0;opacity:0}}
 .cl-dot{transform-box:fill-box;transform-origin:center;animation:clDot 5s ease-in-out infinite}
 @keyframes clDot{0%,35%{transform:scale(0);opacity:0}41%{transform:scale(1.7);opacity:1}48%,90%{transform:scale(1);opacity:1}98%,100%{transform:scale(1);opacity:0}}
-.sl-bat{transform-box:view-box;transform-origin:24px 34px;transform:rotate(45deg);animation:slBat 2.6s infinite}
-@keyframes slBat{0%{transform:rotate(45deg);animation-timing-function:ease-in-out}20%{transform:rotate(88deg);animation-timing-function:linear}32.3%{transform:rotate(45deg);animation-timing-function:linear}52%{transform:rotate(-35deg);animation-timing-function:ease-in-out}100%{transform:rotate(45deg)}}
-.sl-ball{transform-box:fill-box;transform-origin:center;animation:slBall 2.6s infinite}
-@keyframes slBall{0%,19%{transform:translate(10px,-26px) scale(.9);opacity:0;animation-timing-function:cubic-bezier(.4,0,.9,.7)}21%{opacity:1}32.3%{transform:translate(0,0) scale(1);opacity:1;animation-timing-function:linear}33.3%{transform:translate(0,0) scale(1.25,.8);opacity:1;animation-timing-function:cubic-bezier(.1,.7,.3,1)}43%{transform:translate(-6px,-13px) scale(.85);opacity:.9}54%{transform:translate(-11px,-24px) scale(.55);opacity:0}100%{transform:translate(10px,-26px) scale(.9);opacity:0}}
+.sl-bat{transform-box:view-box;transform-origin:24px 20px;transform:rotate(-30deg);animation:slBat 2s infinite}
+@keyframes slBat{0%{transform:rotate(90deg);animation-timing-function:linear}13.2%{transform:rotate(-30deg);animation-timing-function:linear}22%{transform:rotate(-110deg);animation-timing-function:ease-in-out}100%{transform:rotate(90deg)}}
+.sl-ball{transform-box:fill-box;transform-origin:center;animation:slBall 2s infinite}
+@keyframes slBall{0%{transform:translate(18px,4px);opacity:1;animation-timing-function:linear}13.2%{transform:translate(0,0) scale(1);opacity:1}14.2%{transform:translate(0,0) scale(1.25,.8);opacity:1;animation-timing-function:cubic-bezier(.1,.7,.3,1)}20%{transform:translate(8px,-8px) scale(.9);opacity:1}32%{transform:translate(14px,-24px) scale(.5);opacity:0}99%{transform:translate(18px,4px);opacity:0}100%{transform:translate(18px,4px);opacity:1}}
 @media(prefers-reduced-motion:reduce){.cl-line,.cl-dot,.sl-bat,.sl-ball{animation:none}.cl-line{stroke-dashoffset:0}.cl-dot{transform:none}}
 
 /* smooth motion layer */
