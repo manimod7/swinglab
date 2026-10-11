@@ -29,6 +29,7 @@ function showTab(name) {
 tabs.forEach((t) => $('t-' + t).addEventListener('click', () => showTab(t)));
 $('theme').addEventListener('click', () => {
   const r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  r.classList.add('tt'); setTimeout(() => r.classList.remove('tt'), 450);
   r.dataset.theme = dark ? 'light' : 'dark';
 });
 $('hw').innerHTML = hardwareHtml(); $('about').innerHTML = aboutHtml();
